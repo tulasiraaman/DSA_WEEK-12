@@ -1,0 +1,28 @@
+class Solution {
+    // Map to store original node -> cloned node mapping
+    private Map<Node, Node> map = new HashMap<>();
+
+    public Node cloneGraph(Node node) {
+        // Base case: if input graph is empty
+        if (node == null) return null;
+
+        // Step 1: Create a new node with the same value
+        Node newNode = new Node(node.val);
+
+        // Step 2: Store mapping from original to cloned node
+        map.put(node, newNode);
+
+        // Step 3: Traverse all neighbors of the current node
+        for (Node neighbor : node.neighbors) {
+            // If neighbor is already cloned, just add the reference
+            if (map.containsKey(neighbor)) {
+                newNode.neighbors.add(map.get(neighbor));
+            } else {
+                // Otherwise, recursively clone the neighbor
+                newNode.neighbors.add(cloneGraph(neighbor));
+            }
+        }
+        // Step 4: Return the cloned node
+        return newNode;
+    }
+}// TC - O(V + E), SC - O(V + E)
