@@ -1,0 +1,44 @@
+class Solution {
+    public int[][] updateMatrix(int[][] mat) {
+        int n = mat.length;
+        int m = mat[0].length;
+
+        Queue<int[]> q = new LinkedList<>();
+        int[][] result = new int[n][m];
+        
+        //  STEP 1: Initialize result matrix
+        for(int i = 0;i < n;i++){
+            for(int j = 0;j < m;j++){
+                if(mat[i][j] == 0){
+                    q.offer(new int[]{i, j});
+                }else{
+                    result[i][j] = Integer.MAX_VALUE;
+                }
+            }
+        }
+
+        // Directions: up, down, left, right
+        int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+        
+        // STEP 2: Apply DFS
+        while(!q.isEmpty()){
+            int[] cur = q.poll();
+            int row = cur[0];
+            int col = cur[1];
+
+            for(int[] d: dirs){
+                int newRow = row + d[0];
+                int newCol = col + d[1];
+
+                // boundry check
+                if (newRow >= 0 && newRow < n && newCol >= 0 && newCol < m) {
+                    if (result[newRow][newCol] > result[row][col] + 1) {
+                        result[newRow][newCol] = result[row][col] + 1;
+                        q.offer(new int[]{newRow, newCol});
+                    }
+                }
+            }
+        }
+        return result;
+    }
+}// TC - O(N . M), SC - O(N . M)
