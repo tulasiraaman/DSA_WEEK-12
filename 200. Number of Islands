@@ -1,0 +1,34 @@
+class Solution {
+    public int numIslands(char[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+        int islandCount = 0;
+
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                // If we find land ('1'), it's a new island
+                if(grid[i][j] == '1'){
+                    islandCount++;    // increment island count
+                    dfs(grid, i, j, n, m); // run DFS to mark the whole island
+                }
+            }
+        }
+        return islandCount;
+    }
+
+    private void dfs(char[][] grid, int row, int col, int n, int m){
+        // Directions: right, down, up, left
+        int[][] direction = {{0,1}, {1,0}, {-1,0}, {0,-1}};
+
+        // Base case: out of bounds or water/visited cell
+        if(row < 0 || row >= n || col < 0 || col >= m || grid[row][col] != '1') return;
+
+        // Mark current cell as visited
+        grid[row][col] = '@';
+
+        // Explore all 4 directions recursively
+        for(int[] dir: direction){
+            dfs(grid, row + dir[0], col + dir[1], n, m);
+        }
+    }
+} // TC - O(N . M), SC - O(N . M) -> due to stack space
