@@ -1,0 +1,49 @@
+import java.util.*;
+
+class Solution {
+    public int orangesRotting(int[][] grid) {
+        int n = grid.length;          // number of rows
+        int m = grid[0].length;       // number of columns
+        int fresh = 0;                // count of fresh oranges
+        int time = 0;                 // track minutes elapsed
+        Queue<int[]> q = new LinkedList<>(); // BFS queue
+
+        // STEP 1: Count fresh oranges and enqueue rotten ones
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                if(grid[i][j] == 2){
+                    // store row, col, and time (0 initially)
+                    q.add(new int[]{i, j, 0});
+                } else if(grid[i][j] == 1){
+                    fresh++;
+                }
+            }
+        }
+
+        // Directions: right, down, left, up
+        int[][] direction = {{0,1},{1,0},{0,-1},{-1,0}};
+
+        // STEP 2: BFS traversal
+        while(!q.isEmpty()){
+            int[] cur = q.poll();
+            int row = cur[0], col = cur[1], t = cur[2];
+            time = Math.max(time, t); // update max time
+
+            // explore 4 neighbors
+            for(int[] dir : direction){
+                int newRow = row + dir[0];
+                int newCol = col + dir[1];
+
+                // if neighbor is fresh orange, rot it
+                if(newRow >= 0 && newRow < n && newCol >= 0 && newCol < m && grid[newRow][newCol] == 1){
+                    grid[newRow][newCol] = 2; // mark as rotten
+                    fresh--;                  // decrease fresh count
+                    q.add(new int[]{newRow, newCol, t + 1}); // enqueue with incremented time
+                }
+            }
+        }
+
+        // STEP 3: If all fresh oranges are rotten, return time; else -1
+        return fresh == 0 ? time : -1;
+    }
+} // TC - O(N . M), SC - O(N . M)
