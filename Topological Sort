@@ -1,0 +1,46 @@
+class Solution {
+    public ArrayList<Integer> topoSort(int V, int[][] edges) {
+        // ArrayList<Integer>[] adjacent = new ArrayList<>(); wrong initialize
+        // ArrayList<Integer>[] adjacent = new ArrayList[V];
+        // Step 1: Create adjacency list to represent the graph
+        List<List<Integer>> adjacent = new ArrayList<>();
+
+        for(int i = 0; i < V; i++){
+            adjacent.add(new ArrayList<>()); // add a new list for each vertex
+        }
+
+        // Step 2: Create indegree array to track number of incoming edges for each node
+        int[] inDegree = new int[V];
+
+        // Step 3: Build the graph and fill indegree values
+        for(int[] edge: edges){
+            adjacent.get(edge[0]).add(edge[1]); // add directed edge u -> v
+            inDegree[edge[1]]++;                // increment indegree of v
+        }
+
+        // Step 4: Initialize queue with all nodes having indegree = 0 (no dependencies)
+        Queue<Integer> q = new LinkedList<>();
+        for(int i = 0; i < V; i++){
+            if(inDegree[i] == 0) q.offer(i);
+        }
+
+        // Step 5: Perform BFS-like traversal (Kahn’s Algorithm)
+        ArrayList<Integer> topoSort = new ArrayList<>();
+
+        while(!q.isEmpty()){
+            int curr = q.poll();       // take node with indegree 0
+            topoSort.add(curr);        // add it to topological order
+
+            // Reduce indegree of all its neighbors
+            for(int neighbour: adjacent.get(curr)){
+                inDegree[neighbour]--;
+
+                // If indegree becomes 0, add to queue
+                if(inDegree[neighbour] == 0) q.offer(neighbour);
+            }
+        }
+
+        // Step 6: Return the topological order
+        return topoSort;
+    }
+}// TC = SC = O(E + V)
