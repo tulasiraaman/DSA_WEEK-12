@@ -1,0 +1,49 @@
+class Solution {
+    private int row = 0, col = 0;
+    // Directions: down, up, right, left
+    private int[][] direction = {{1,0},{-1,0},{0,1},{0,-1}};
+
+    public List<List<Integer>> pacificAtlantic(int[][] heights) {
+        row = heights.length;
+        col = heights[0].length;
+
+        // Track cells reachable from Pacific and Atlantic
+        boolean[][] pacific = new boolean[row][col];
+        boolean[][] atlantic = new boolean[row][col];
+
+        // DFS from Pacific (left + top edges) and Atlantic (right + bottom edges)
+        for(int i = 0; i < row; i++){
+            dfs(heights, pacific, i, 0, heights[i][0]);          // Pacific left edge
+            dfs(heights, atlantic, i, col-1, heights[i][col-1]); // Atlantic right edge
+        }
+
+        for(int j = 0; j < col; j++){
+            dfs(heights, pacific, 0, j, heights[0][j]);          // Pacific top edge
+            dfs(heights, atlantic, row-1, j, heights[row-1][j]); // Atlantic bottom edge
+        }
+
+        // Collect cells reachable by both oceans
+        List<List<Integer>> result = new ArrayList<>();
+        for(int r = 0; r < row; r++){
+            for(int c = 0; c < col; c++){
+                if(pacific[r][c] && atlantic[r][c]){
+                    result.add(List.of(r, c)); // Arrays.asList(r, c), List.of(r, c)
+                }
+            }
+        }
+        return result;
+    }
+
+    // DFS to mark reachable cells
+    private void dfs(int[][] heights, boolean[][] visited, int r, int c, int prevHeight){
+        // Stop if out of bounds, already visited, or current cell is lower than previous
+        if(r < 0 || c < 0 || r >= row || c >= col || visited[r][c] || heights[r][c] < prevHeight) return;
+
+        visited[r][c] = true; // Mark cell as reachable
+
+        // Explore all 4 directions
+        for(int[] dir: direction){
+            dfs(heights, visited, r + dir[0], c + dir[1], heights[r][c]);
+        }
+    }
+} // TC - O(M . N), SC - O(M . N)   
