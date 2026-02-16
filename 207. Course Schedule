@@ -1,0 +1,41 @@
+class Solution {
+    public boolean canFinish(int n, int[][] prerequisites) {
+        // Step 1: Build adjacency list for graph representation
+        List<List<Integer>> adj = new ArrayList<>();
+        for(int i = 0; i < n; i++){
+            adj.add(new ArrayList<>()); // initialize list for each course
+        }
+
+        // Step 2: Build indegree array (number of prerequisites for each course)
+        int[] inDegree = new int[n];
+        for(int[] edge: prerequisites){
+            adj.get(edge[1]).add(edge[0]); // edge: course depends on prerequisite
+            inDegree[edge[0]]++;           // increment indegree of dependent course
+        }
+
+        // Step 3: Initialize queue with courses having indegree = 0 (no prerequisites)
+        Queue<Integer> queue = new LinkedList<>();
+        for(int i = 0; i < n; i++){
+            if(inDegree[i] == 0) queue.offer(i);
+        }
+
+        // Step 4: Process courses in BFS order
+        int count = 0; // count of courses that can be finished
+        while(!queue.isEmpty()){
+            int node = queue.poll(); // take a course with no remaining prerequisites
+            count++;                 // mark it as finished
+
+            // Reduce indegree of all dependent courses
+            for(int neighbour: adj.get(node)){
+                inDegree[neighbour]--;
+                // If indegree becomes 0, add to queue (ready to be taken)
+                if(inDegree[neighbour] == 0){
+                    queue.offer(neighbour);
+                }
+            }
+        }
+
+        // Step 5: If all courses are finished, return true; otherwise false
+        return count == n;
+    }
+}
