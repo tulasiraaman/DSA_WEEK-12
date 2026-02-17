@@ -1,0 +1,40 @@
+class Solution {
+    public int[] findOrder(int n, int[][] prerequisites) {
+        // Step 1: Build graph and indegree array
+        List<List<Integer>> adj = new ArrayList<>();
+
+        for(int i = 0;i < n;i++){
+            adj.add(new ArrayList<>());
+        }
+
+        int[] inDegree = new int[n];
+        for(int[] pair: prerequisites){
+            adj.get(pair[1]).add(pair[0]);
+            inDegree[pair[0]]++;
+        }
+        
+        // Step 2: Initialize queue with courses having no prerequisites
+        Queue<Integer> queue = new LinkedList<>();
+        for(int i = 0;i < n;i++){
+            if(inDegree[i] == 0) queue.offer(i);
+        }
+
+        // Step 3: Process courses
+        int orders[] = new int[n];
+        int index = 0;
+
+        while(!queue.isEmpty()){
+            int cur = queue.poll();
+            orders[index++] = cur;
+
+            for(int neighbours: adj.get(cur)){
+                inDegree[neighbours]--;
+
+                if(inDegree[neighbours] == 0){
+                    queue.offer(neighbours);
+                }
+            }
+        }
+        return index == n ? orders : new int[0];
+    }
+}
