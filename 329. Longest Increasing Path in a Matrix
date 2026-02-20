@@ -1,0 +1,43 @@
+class Solution {
+    private int[][] direction = {{0,1},{1,0},{-1,0},{0,-1}};
+
+    public int longestIncreasingPath(int[][] matrix) {
+        if(matrix == null || matrix.length == 0) return 0;
+
+        int n = matrix.length, m = matrix[0].length;
+        int[][] cache = new int[n][m];
+        int longestPath = 0;
+
+        // Try starting DFS from every cell
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                int longest = DFS(matrix, cache, i, j, n, m);
+                longestPath = Math.max(longestPath, longest);
+            }
+        }
+        return longestPath;
+    }
+
+    private int DFS(int[][] matrix, int[][] cache, int i, int j, int n, int m){
+        // If already computed, return cached result
+        if(cache[i][j] > 0) return cache[i][j];
+
+        int max = 0;
+
+        // Explore all 4 directions
+        for(int[] dir: direction){
+            int newRow = i + dir[0], newCol = j + dir[1];
+
+            // Check bounds and increasing condition
+            if(newRow >= 0 && newRow < n && newCol >= 0 && newCol < m 
+               && matrix[newRow][newCol] > matrix[i][j]){
+                int len = DFS(matrix, cache, newRow, newCol, n, m);
+                max = Math.max(len, max);
+            }
+        }
+
+        // Store result: longest path from (i,j) includes itself (+1)
+        cache[i][j] = max + 1;
+        return cache[i][j];
+    }
+} // TC - O(N . M), SC - O(N . M)
